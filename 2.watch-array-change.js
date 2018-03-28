@@ -33,7 +33,7 @@ function FakeArray () {
 
 let original = Array.prototype
 // 将 FakeArray 的 prototype 指向 Array 的 prototype
-FakeArray.prototype = original
+FakeArray.prototype = Object.create(original) // Object.create 方法是以第一个参数为原型，新建出一个对象(避免重写原型方法的时候修改原生数组的方法)
 // 将 FakeArray 的 prototype 的 constructor 指向 FakeArray
 FakeArray.prototype.constructor = FakeArray
 // 重写 FakeArray 的 原型对象中的方法
