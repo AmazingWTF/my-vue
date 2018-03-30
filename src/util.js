@@ -42,3 +42,18 @@ exports.define = function (obj, key, val) {
     configurable: true
   })
 }
+
+
+
+if ('__proto__' in {}) {
+  exports.augment = function (target, proto) {
+    target.__proto__ = proto
+  }
+} else {
+  exports.augment = function (target, proto) {
+    Object.getOwnPropertyNames(proto).forEach(function (key) {
+      var descriptor = Object.getOwnPropertyDescriptor(proto, key)
+      Object.defineProperty(target, key, descriptor)
+    })
+  }
+}
