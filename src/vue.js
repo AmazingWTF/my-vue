@@ -1,9 +1,13 @@
 var _       = require('./util'),
-    Compile = require('./compiler/compiler')
+    Compiler = require('./compiler/compiler')
 
 /**
  * the exposed Vue constructor
+ * 
+ * @constructor
+ * @public
  */
+
 function Vue (options) {
   this._compiler = new Compiler(this, options)
 }

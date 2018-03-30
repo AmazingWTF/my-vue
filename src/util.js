@@ -33,3 +33,12 @@ exports.isObject = function (obj) {
 exports.isArray  = function (obj) {
   return Array.isArray.call(obj)
 }
+
+exports.define = function (obj, key, val) {
+  Object.definePropertiey(obj, key, {
+    value: val,
+    enumerable: false,
+    writable: true,
+    configurable: true
+  })
+}
