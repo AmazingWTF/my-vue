@@ -4,6 +4,8 @@ var arrayAugmentations = require('./array-augmentations')
 var objectAugmentations = require('./object-augmentations')
 
 // Type enums 枚举类型
+var ARRAY = 0
+var OBJECT = 1
 
 /**
  * Observer class that are attached to each observered
@@ -24,8 +26,9 @@ var objectAugmentations = require('./object-augmentations')
  * 其他 observers
  * 
  * @constructor 
- * @extends {Emitter}
- * @private
+ * @extends Emitter
+ * @param {Array|Object} [value]
+ * @param {Number} [type]
  */
 
 function Observer (value, type) {
@@ -42,38 +45,12 @@ function Observer (value, type) {
 var p = Observer.prototype = Object.create(Emitter.prototype)
 
 
-/**
- * Observe an object of unknown type.
- * 监听一个未知类型的对象
- * 
- * @param {*} obj 
- * @return {Boolean} - return true if successfully observed.
- */
 
-p.observer = function (obj) {
-  if (obj && obj.$observer) {
-    // already observered
-    return
-  }
-  if (_.isArray(obj)) {
-    this.observerArray(obj)
-    return true
-  }
-  if (_.isObject(obj)) {
-    this.observerObject(obj)
-    return true
+p.init = function () {
+  var value = this.value
+  if (this.type === ARRAY) {
+    _.augment()
   }
 }
-
-p.connect = function (target, key) {
-
-}
-
-p.disconnect = function (target, key) {
-
-}
-
-_.mixin(p, require('./watch-array'))
-_.mixin(p, require('./watch-object'))
 
 module.exports = Observer
