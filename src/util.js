@@ -1,6 +1,10 @@
-// common utils
+/**
+ * Mix properties into target object
+ * 
+ * @param {target} object 
+ * @param {mixin} object 
+ */
 
-// need deep copy?
 exports.mixin = function (target, mixin) {
   for (var key in mixin) {
     if (target[key] !== mixin[key]) {
@@ -9,6 +13,23 @@ exports.mixin = function (target, mixin) {
   }
 }
 
-exports.nextTick = function () {
-  
+/**
+ * Object type check. Only returns true 
+ * for plain Javascript objects.
+ * 
+ * @param {*} obj
+ * @return {Boolean}
+ */
+exports.isObject = function (obj) {
+  return Object.toString.call(obj) === '[object Object]'
+}
+
+/**
+ * Array type check
+ * 
+ * @param {*} obj 
+ * @return {Boolean}
+ */
+exports.isArray  = function (obj) {
+  return Array.isArray.call(obj)
 }
