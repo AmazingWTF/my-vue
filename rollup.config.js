@@ -1,4 +1,5 @@
 import rollupPluginBabel from 'rollup-plugin-babel'
+import rollupPluginCommonjs from 'rollup-plugin-commonjs'
 
 export default {
   input: 'src/vue.js',
@@ -7,6 +8,7 @@ export default {
     format: 'cjs'
   },
   plugins: [
+    rollupPluginCommonjs(),
     rollupPluginBabel()
   ]
 }
