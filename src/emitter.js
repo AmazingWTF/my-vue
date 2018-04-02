@@ -91,9 +91,9 @@ p.off = function (event, fn) {
 
 
 /**
- * 
  * The internal, faster emit with fixed amount of arguments
  * using Function.call.
+ * 
  * 内部，使用更快的 emit (Function.call 并且参数固定)
  * 
  * @param {String} event
@@ -117,6 +117,7 @@ p.emit = function (event, a, b, c) {
 /**
  * The external emit using Function.apply, used
  * by Vue instance event method
+ * 
  * 外部(用户)调用 emit 使用的是 Function.apply，以 Vue 实例事件方法调用 (个人理解)
  * 
  * @param {String} event 

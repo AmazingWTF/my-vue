@@ -43,7 +43,17 @@ exports.define = function (obj, key, val) {
   })
 }
 
-
+/**
+ * Augment an Object or Array by either
+ * intercepting the prototype chain using __proto__,
+ * or copy over property descriptors
+ * 
+ * 重写对象的 __proto__ 属性或使用对象原生的直接方法定义在对象身上，
+ * 来扩展一个对象或数组，拦截本来的原型链
+ * 
+ * @param {Object|Array} target
+ * @param {Object} proto
+ */
 
 if ('__proto__' in {}) {
   exports.augment = function (target, proto) {

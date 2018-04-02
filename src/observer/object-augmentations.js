@@ -1,84 +1,32 @@
-'use strict'
+var _ = require('../util')
+var objectAugmentations = Object.create(Object.prototype)
 
-// 实现监听对象的变化
+/**
+ * Add a new property to an observed object
+ * and emits corresponding event
+ * 
+ * 给一个被监听的对象添加一个新的属性，并且 emit 对应的触发事件
+ * 
+ * @param {String} key
+ * @param {*} val
+ * @public
+ */
 
-function Observer (data) {
-  this.data = data
-  this.walk(data)
-}
-
-Observer.prototype = {
-  // 遍历对象的方法
-  walk (obj) {
-    let val
-    for (let key in obj) {
-      // This is obj's own property
-      if (obj.hasOwnProperty(key)) {
-        val = obj[key]
-  
-        if (typeof val === 'object') {
-          new Observer(val)
-        }
-  
-        this.convert(key, val)
-      }
-    }
-  },
-  // 给每个键值设置 getter 和 setter
-  convert (key, val) {
-    Object.defineProperty(this.data, key, {
-      enumerable: true,
-      configurable: true,
-      get () {
-        console.log('你访问了: ', key)
-        return val
-      },
-      set (newVal) {
-        console.log('你设置了: ', key)
-        console.log('新的' + key + ' = ' + newVal)
-        if (newVal === val) return
-        val = newVal
-      }
-    })
-  }
-}
+_.define(objectAugmentations, '$add', function (key, val) {
+  if (this.hasOwnProperty(key)) return
+  this[key] = val
+  this.$observer.convert(key, val)
+  // emit 将事件对应的 callback 列表中的处理事件遍历执行，无 _cbs 则添加
+  this.$observer.emit('add', key, val)
+})
 
 
-// class 写法
-class Observer {
-  constructor (data) {
-    this.data = data
-    this.walk(data)
-  }
+_.define(objectAugmentations, '$delete', function (key) {  
+  if (!this.hasOwnProperty(key)) return
+  // trigger set events (this event seems to be a native property (setter/getter) of the object)
+  this[key] = undefined
+  delete this[key]
+  this.$observer.emit('delete', key)
+})
 
-  walk (data) {
-    let val
-    for (let key in data) {
-      if (data.hasOwnProperty(key)) {
-        val = data[key]
-
-        if (typeof val === 'object') {
-          new Observer(val)
-        }
-        
-        this.convert(key, val)
-      }
-    }
-  }
-
-  convert (key, val) {
-    Object.defineProperty(this.data, key, {
-      enumerable: true,
-      configurable: true,
-      get () {
-        console.log(`你访问了: ${ key }`)
-        return val
-      },
-      set (newVal) {
-        console.log(`你设置了: ${ key }`)
-        console.log(`新的${ key } 为: ${ newVal }`)
-        val = newVal
-      }
-    })
-  }
-}
+module.exports = objectAugmentations
