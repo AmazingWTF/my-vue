@@ -20,6 +20,7 @@ exports.mixin = function (target, mixin) {
  * @param {*} obj
  * @return {Boolean}
  */
+
 exports.isObject = function (obj) {
   return Object.toString.call(obj) === '[object Object]'
 }
@@ -30,16 +31,27 @@ exports.isObject = function (obj) {
  * @param {*} obj 
  * @return {Boolean}
  */
-exports.isArray  = function (obj) {
+
+exports.isArray = function (obj) {
   return Array.isArray.call(obj)
 }
 
+/**
+ * Define a non-enumberable property
+ * 
+ * 定义一个不可列举(遍历)的属性
+ * 
+ * @param {Object} obj
+ * @param {String} key
+ * @param {*} val
+ */
+
 exports.define = function (obj, key, val) {
   Object.definePropertiey(obj, key, {
-    value: val,
-    enumerable: false,
-    writable: true,
-    configurable: true
+    value        : val,
+    enumerable   : false,
+    writable     : true,
+    configurable : true
   })
 }
 
