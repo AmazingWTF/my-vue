@@ -15,7 +15,11 @@ import type { SimpleSet } from '../util/index'
 
 let uid = 0
 
-
+/**
+ * A watcher parses an expression, collects dependencies,
+ * and fires callback when the expression value changes.
+ * This is used for both the $watch() api and directives.
+ */
 export default class Watcher {
   vm: Component;
   expression: string;
@@ -38,6 +42,7 @@ export default class Watcher {
     expOrFn: string | Function,
     cb: Function,
     options?: ?Object,
+    isRenderWatcher?: boolean
   ) {
     this.vm = vm
     if (isRenderWatcher) {
@@ -95,7 +100,7 @@ export default class Watcher {
         handleError(e, vm, `getter for watcher "${this.expression}"`)
       } else {
         throw e
-      }a
+      }
     } finally {
 
       if (this.deep) {
