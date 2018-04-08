@@ -14,6 +14,43 @@ exports.mixin = function (target, mixin) {
 }
 
 /**
+ * Mixin including non-enumerables, and copy property descriptors.
+ *
+ * @param to
+ * @param from
+ */
+
+exports.deepMixin = function (to, from) {
+  Object.getOwnPropertyNames(from).forEach(function (key) {
+    var descriptor = Object.getOwnPropertyDescriptor(from, key)
+    Object.defineProperty(to, key, descriptor)
+  })
+}
+
+/**
+ * Proxy a property on one object to another
+ *
+ * 用一个对象的属性代理另一个对象的属性
+ *
+ * @param to
+ * @param from
+ * @param key
+ */
+exports.proxy = function (to, from, key) {
+  if (to.hasOwnProperty(key)) return
+  Object.defineProperty(to, key, {
+    enumerable: true,
+    configurable: true,
+    get: function () {
+      return from[key]
+    },
+    set: function (val) {
+      from[key] = val
+    }
+  })
+}
+
+/**
  * Object type check. Only returns true 
  * for plain Javascript objects.
  * 
@@ -22,7 +59,7 @@ exports.mixin = function (target, mixin) {
  */
 
 exports.isObject = function (obj) {
-  return Object.toString.call(obj) === '[object Object]'
+  return Object.prototype.toString.call(obj) === '[object Object]'
 }
 
 /**
@@ -33,23 +70,22 @@ exports.isObject = function (obj) {
  */
 
 exports.isArray = function (obj) {
-  return Array.isArray.call(obj)
+  return Array.prototype.isArray.call(obj)
 }
 
 /**
- * Define a non-enumberable property
- * 
- * 定义一个不可列举(遍历)的属性
+ * Define a property for obj.
  * 
  * @param {Object} obj
  * @param {String} key
  * @param {*} val
+ * @param {Boolean} [enumerable]
  */
 
-exports.define = function (obj, key, val) {
+exports.define = function (obj, key, val, enumerable) {
   Object.definePropertiey(obj, key, {
     value        : val,
-    enumerable   : false,
+    enumerable   : !!enumerable,
     writable     : true,
     configurable : true
   })
@@ -59,7 +95,7 @@ exports.define = function (obj, key, val) {
  * Augment an Object or Array by either
  * intercepting the prototype chain using __proto__,
  * or copy over property descriptors
- * 
+ *
  * 重写对象的 __proto__ 属性或使用对象原生的直接方法定义在对象身上，
  * 来扩展一个对象或数组，拦截本来的原型链
  * 
@@ -72,10 +108,5 @@ if ('__proto__' in {}) {
     target.__proto__ = proto
   }
 } else {
-  exports.augment = function (target, proto) {
-    Object.getOwnPropertyNames(proto).forEach(function (key) {
-      var descriptor = Object.getOwnPropertyDescriptor(proto, key)
-      Object.defineProperty(target, key, descriptor)
-    })
-  }
+  exports.augment = exports.deepMixin
 }

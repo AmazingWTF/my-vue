@@ -19,7 +19,7 @@ var arrayAugmentations = Object.create(Array.prototype)
   var original = Array.prototype[method]
   // defined wrapped method
   // 在原生方法加上包裹层
-  _.define(arrayArgumentations, method, function () {
+  _.define(arrayAugmentations, method, function () {
 
     var args = slice.call(arguments)
     var result = original.apply(this, args)
@@ -49,8 +49,8 @@ var arrayAugmentations = Object.create(Array.prototype)
         index = args[0]
         break
     }
-    
-    // link/unlink added/reomved elements
+
+    // link/unlink added/removed elements
     if (inserted) ob.link(inserted, index)
     if (removed) ob.unlink(removed)
 
@@ -61,17 +61,17 @@ var arrayAugmentations = Object.create(Array.prototype)
 
     // emit length change
     if (inserted || removed) {
-      ob.notify('set', 'length', this.length)
+      ob.propagate('set', 'length', this.length)
     }
 
     // empty path, value is the Array itself
-    ob.notify('mutate', '', this, {
+    ob.propagate('mutate', '', this, {
       method   : method,
       args     : args,
+      index    : index,
       result   : result,
-      inserted : inserted || [],
       removed  : removed || [],
-      index    : index
+      inserted : inserted || []
     })
 
     return result

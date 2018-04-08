@@ -14,10 +14,12 @@ var objectAugmentations = Object.create(Object.prototype)
 
 _.define(objectAugmentations, '$add', function (key, val) {
   if (this.hasOwnProperty(key)) return
-  this[key] = val
-  this.$observer.convert(key, val)
-  // emit 将事件对应的 callback 列表中的处理事件遍历执行，无 _cbs 则添加
-  this.$observer.notify('added', key, val)
+  _.define(this, key, val, true)
+  var ob = this.$observer
+  ob.observe(key, val)
+  ob.convert(key, val)
+  ob.emit('set:key', key, val)
+  ob.propagate('added', key, val)
 })
 
 /**
@@ -33,9 +35,10 @@ _.define(objectAugmentations, '$add', function (key, val) {
 _.define(objectAugmentations, '$delete', function (key) {  
   if (!this.hasOwnProperty(key)) return
   // trigger set events (the 'set' event seems to be a native property (setter/getter) of the object)
-  this[key] = undefined
   delete this[key]
-  this.$observer.notify('deleted', key)
+  var ob = this.$observer
+  ob.emit('deleted:self', key)
+  ob.propagate('deleted', key)
 })
 
 module.exports = objectAugmentations

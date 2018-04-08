@@ -1,5 +1,6 @@
 /**
- * 
+ * Simple event emitter based on component/emitter.
+ *
  * @constructor 
  * @param {Object} ctx - the context to call listeners with.(监听器的上下文)
  */
@@ -35,7 +36,7 @@ p.on = function (event, fn) {
  */
 p.once = function (event, fn) {
   var _this = this
-  var _cbs = this._cbs || {}
+  this._cbs = this._cbs || {}
 
   // 使用 on 函数作为回调，on 函数内部移除这个监听事件，以此达到 once 监听
   function on () {

@@ -1,41 +1,50 @@
-var _       = require('./util'),
-    Compiler = require('./compiler/compiler')
+var _ = require('./util')
 
 /**
  * the exposed Vue constructor
- * 
+ *
+ * API conventions:
+ * - public API methods/properties are prefixed with `$`
+ * - internal methods/properties are prefixed with `_`
+ * - non-prefixed properties are assumed to be proxied user data.
+ *
  * @constructor
- * @param {Object} options
+ * @param {Object} [options]
  * @public
  */
 
 function Vue (options) {
-  this._compiler = new Compiler(this, options)
+  this._init(options)
 }
 
-/**
- * Mixin instance methods
- */
-
 var p = Vue.prototype
-_.mixin(p, require('./instance/lifecycle'))
-_.mixin(p, require('./instance/data'))
-_.mixin(p, require('./instance/dom'))
-_.mixin(p, require('./instance/events'))
 
 /**
- * Mixin asset registers
+ * Define prototype properties.
  */
 
-_.mixin(Vue, require('./api/api-asset-register'))
+require('./internal/properties')(p)
 
 /**
- * Static methods
+ * Mixin internal instance methods.
  */
-Vue.config = require('./api/config')
-Vue.require = require('./api/require')
-Vue.use = require('./api/use')
-Vue.extend = require('./api/extend')
-Vue.nextTick = require('./util').nextTick
+
+_.mixin(p, require('./internal/init'))
+_.mixin(p, require('./internal/compile'))
+
+/**
+ * Mixin API instance methods.
+ */
+
+_.mixin(p, require('./aip/data'))
+_.mixin(p, require('./aip/dom'))
+_.mixin(p, require('./aip/events'))
+_.mixin(p, require('./aip/lifecycle'))
+
+/**
+ * Mixin global API.
+ */
+
+_.mixin(Vue, require('./api/global'))
 
 module.exports = Vue
