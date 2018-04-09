@@ -10,10 +10,10 @@ var ARRAY = 0
 var OBJECT = 1
 
 /**
- * Observer class that are attached to each observered
+ * Observer class that are attached to each observed
  * object. Observers can connect to each other like nodes
  * to map the hierarchy of data objects. Once connected,
- * detected change evnets can propagate up the nested chain.
+ * detected change events can propagate up the nested chain.
  *
  * Observer 被添加在每一个被监听的对象上，它们本质上是事件发射器，
  * 但是可以将彼此连接，像 DOM 遍历一样遍历数据对象。连接之后，发现
@@ -32,17 +32,27 @@ var OBJECT = 1
  * @param {Number} [type]
  */
 
-function Observer(value, type) {
+function Observer (value, type, options) {
   // 继承自 Emitter (on, once, emit 等方法)
-  Emitter.call(this)
+  Emitter.call(this, options && options.callbackContext)
   // 挂载 相关数据方便 prototype 使用
   this.value = value
   this.type = type
-  this.initiated = false
-  this.adaptors = Object.create(null)
+  this.parents = null
   // 根据 value 类型(Object|Array)，则将 value 添加对应的 $observer 属性
   if (value) {
     _.define(value, '$observer', this)
+    if (type === ARRAY) {
+      _.augment(value, arrayAugmentations)
+      this.link(value)
+    } else if (type === OBJECT) {
+      if (options && options.doNotAlterProto) {
+        _.deepMixin(value, objectAugmentations)
+      } else {
+        _.augment(value, objectAugmentations)
+      }
+      this.walk(value)
+    }
   }
 }
 
@@ -80,13 +90,16 @@ Observer.emitGet = false
  * @static
  */
 
-Observer.create = function (value) {
-  if (value && value.$observer) {
+Observer.create = function (value, options) {
+  if (value &&
+    value.hasOwnProperty('$observer') &&
+    value.$observer instanceof Observer) {
     return value.$observer
-  } if (_.isArray(value)) {
-    return new Observer(value, ARRAY)
-  } else if (_.isObject(value)) {
-    return new Observer(value, OBJECT)
+  }
+  if (_.isArray(value)) {
+    return new Observer(value, ARRAY, options)
+  } else if (_.isObject(value) && !value._scope) { // avoid Vue instance
+    return new Observer(value, OBJECT, options)
   }
 }
 
@@ -206,12 +219,12 @@ p.convert = function (key, val) {
       if (newVal === val) return
       ob.unobserve(val)
       ob.observe(key, newVal)
-      ob.emit('set:key', key, newVal)
-      ob.notify('propagate', key, newVal)
+      ob.emit('set:self', key, newVal)
+      ob.propagate('set', key, newVal)
       if (_.isArray(newVal)) {
         ob.propagate('set',
-                  key + Observer.pathDelimiter + 'length',
-                  newVal.length)
+                    key + Observer.pathDelimiter + 'length',
+                    newVal.length)
       }
       val = newVal
     }

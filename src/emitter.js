@@ -1,11 +1,11 @@
 /**
  * Simple event emitter based on component/emitter.
  *
- * @constructor 
+ * @constructor
  * @param {Object} ctx - the context to call listeners with.(监听器的上下文)
  */
 
-function Emitter(ctx) {
+function Emitter (ctx) {
   this._ctx = ctx || this
 }
 
@@ -14,26 +14,27 @@ var p = Emitter.prototype
 /**
  * Listen on the given 'event' with 'fn'
  * 为事件 event 注册监听事件，fn 为触发后执行的函数
- * 
- * @param {String} event 
- * @param {Function} fn 
+ *
+ * @param {String} event
+ * @param {Function} fn
  * @return {Emitter}
  */
 p.on = function (event, fn) {
   this._cbs = this._cbs || {}
-    ; (this._cbs[event] = this._cbs[event] || [])
-      .push(fn)
+  ;(this._cbs[event] = this._cbs[event] || [])
+    .push(fn)
   return this
 }
 
 /**
  * Adds an 'event' listener that will be invoked a single
  * time then automatically removed.
- * 
+ *
  * @param {String} event
  * @param {Function} fn
  * @return {Emitter}
  */
+
 p.once = function (event, fn) {
   var _this = this
   this._cbs = this._cbs || {}
@@ -53,9 +54,9 @@ p.once = function (event, fn) {
  * Remove the given callback for 'event' or all
  * registered callbacks
  * 删除事件的给定回调或者所有的回调函数
- * 
- * @param {String} event 
- * @param {Function} fn 
+ *
+ * @param {String} event
+ * @param {Function} fn
  * @return {Emitter}
  */
 
@@ -94,9 +95,9 @@ p.off = function (event, fn) {
 /**
  * The internal, faster emit with fixed amount of arguments
  * using Function.call.
- * 
+ *
  * 内部，使用更快的 emit (Function.call 并且参数固定)
- * 
+ *
  * @param {String} event
  * @return {Emitter}
  */
@@ -118,10 +119,10 @@ p.emit = function (event, a, b, c) {
 /**
  * The external emit using Function.apply, used
  * by Vue instance event method
- * 
+ *
  * 外部(用户)调用 emit 使用的是 Function.apply，以 Vue 实例事件方法调用 (个人理解)
- * 
- * @param {String} event 
+ *
+ * @param {String} event
  * @return {Emitter}
  */
 p.applyEmit = function (event) {

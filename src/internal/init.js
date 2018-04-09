@@ -8,6 +8,7 @@ var scopeEvents = ['set', 'mutate', 'added', 'deleted', 'added:self', 'deleted:s
  * @param {Object} options
  * @private
  */
+
 exports._init = function (options) {
   this.$options = options = options || {}
   // create scope
@@ -23,10 +24,11 @@ exports._init = function (options) {
  * Setup scope and listen to parent scope changes.
  * Only called once during _init().
  *
- * @param optoins
+ * @param {Object} options
  * @private
  */
-exports._initScope = function (optoins) {
+
+exports._initScope = function (options) {
   var parent = this.$parent = options.parent
   var scope = this._scope = parent && options._inheritScope !== false
     ? Object.create(parent._scope)

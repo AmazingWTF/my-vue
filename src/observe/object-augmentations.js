@@ -18,7 +18,7 @@ _.define(objectAugmentations, '$add', function (key, val) {
   var ob = this.$observer
   ob.observe(key, val)
   ob.convert(key, val)
-  ob.emit('set:key', key, val)
+  ob.emit('added:self', key, val)
   ob.propagate('added', key, val)
 })
 
@@ -32,7 +32,7 @@ _.define(objectAugmentations, '$add', function (key, val) {
  * @public
  */
 
-_.define(objectAugmentations, '$delete', function (key) {  
+_.define(objectAugmentations, '$delete', function (key) {
   if (!this.hasOwnProperty(key)) return
   // trigger set events (the 'set' event seems to be a native property (setter/getter) of the object)
   delete this[key]
