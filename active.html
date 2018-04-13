@@ -12,48 +12,18 @@
 
 
 </body>
-
+<script src="./dist/vue.js"></script>
 <script>
-  // 数据劫持
-  // 构造类
-  // 依赖收集
-
-  function defineReactive (obj, key, val) {
-    Object.defineProperty(obj, key, {
-      get: function () {
-        console.log(`property ${key} getter`)
-        return val
-      },
-      set: function (newVal) {
-        console.log(`property ${key} is changed to ${newVal}`)
-        val = newVal
+  let app = new Vue({
+    data: {
+      msg: 'test'
+    },
+    computed: {
+      msg: function () {
+        return this.msg + 'change'
       }
-    })
-  }
-
-  // 将对象转为getter/setter对象
-  function observe (obj) {
-    const keys = Object.keys(obj)
-    keys.forEach(function (key) {
-      defineReactive(obj, key, obj[key])
-    })
-    return obj
-  }
-
-  // 对象变化，触发
-
-
-
-
-  let a = {
-    name: 'test',
-    age: 11,
-    gender: 1
-  }
-
-
-
-
+    }
+  })
 </script>
 
 </html>

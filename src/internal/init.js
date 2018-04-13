@@ -1,3 +1,8 @@
+import {
+  mergeOptions
+} from '../util/options'
+
+
 export default function (Vue) {
   
   Vue.prototype._init = function (options) {
@@ -6,6 +11,12 @@ export default function (Vue) {
     this._isVue = true
 
     this._data = {}
+
+    options = this.$options = mergeOptions(
+      this.constructor.options,
+      options,
+      this
+    )
     
     // initialize data observation and scope inheritance.
     // 初始化数据观察者和继承范围

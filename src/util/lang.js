@@ -1,8 +1,4 @@
-import { toASCII } from "punycode";
-import { format } from "util";
-
 let toString = Object.prototype.toString
-
 
 /**
  * Quick objcet check - this is primarily used to tell
