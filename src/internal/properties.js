@@ -20,6 +20,8 @@ module.exports = function (p) {
 
   /**
    * $data has a setter which does a bunch of teardown/setup work.
+   *
+   * $data 拥有一个用来执行大量卸载/挂载的工作
    */
 
   Object.defineProperty(p, '$data', {

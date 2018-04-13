@@ -203,4 +203,13 @@ exports._unsync = function () {
 }
 
 
+/**
+ * init
+ *   - _initScope
+ *     判断
+ *
+ *
+ */
+
+
 

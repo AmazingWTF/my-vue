@@ -83,7 +83,7 @@ exports.isArray = function (obj) {
  */
 
 exports.define = function (obj, key, val, enumerable) {
-  Object.definePropertiey(obj, key, {
+  Object.defineProperty(obj, key, {
     value        : val,
     enumerable   : !!enumerable,
     writable     : true,

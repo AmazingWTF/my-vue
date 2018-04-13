@@ -1,0 +1,29 @@
+{
+  "name": "my-vue",
+  "version": "1.0.0",
+  "description": "current commit by Evan You: https://github.com/vuejs/vue/commits/v1.0.20?before=b12e21cb36522f8defab82de3111502a8b97083f+1787\r git commit version: e9ecdfe1c0f695396ce790f9637787239d180804",
+  "main": "rollup.config.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "rollup": "^0.57.1",
+    "rollup-plugin-babel": "^3.0.3",
+    "rollup-plugin-commonjs": "^9.1.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AmazingWTF/my-vue.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AmazingWTF/my-vue/issues"
+  },
+  "homepage": "https://github.com/AmazingWTF/my-vue#readme"
+}

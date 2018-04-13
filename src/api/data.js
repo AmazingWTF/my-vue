@@ -2,7 +2,7 @@ exports.$get = function () {
 
 }
 
-exports.$get = function () {
+exports.$set = function () {
 
 }
 

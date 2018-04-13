@@ -36,10 +36,10 @@ _.mixin(p, require('./internal/compile'))
  * Mixin API instance methods.
  */
 
-_.mixin(p, require('./aip/data'))
-_.mixin(p, require('./aip/dom'))
-_.mixin(p, require('./aip/events'))
-_.mixin(p, require('./aip/lifecycle'))
+_.mixin(p, require('./api/data'))
+_.mixin(p, require('./api/dom'))
+_.mixin(p, require('./api/events'))
+_.mixin(p, require('./api/lifecycle'))
 
 /**
  * Mixin global API.

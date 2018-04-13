@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>test</title>
+</head>
+<body id="app">
+
+
+<input type="text" v-model="msg">
+{{ msg }}
+</body>
+
+<script src="http://apps.bdimg.com/libs/vue/1.0.14/vue.js"></script>
+<script>
+  console.log(Vue)
+  for (var k in Vue) {
+    console.log(k)
+  }
+  new Vue({
+    el: '#app',
+    data: {
+      msg: 'test'
+    }
+  })
+</script>
+</html>
