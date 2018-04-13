@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <div id="dv">
+    msg: {{ msg }}
+    <br>
+    obj: {{ one.name }}
+
+    <br>
+    <br>
+    <br>
+    <input type="text" v-model="msg">
+    <input type="text" v-model="one.name">
+    <input type="text" v-model="two.name">
+    <input type="text" v-model="three.name">
+  </div>
+
+  <script src="http://apps.bdimg.com/libs/vue/1.0.8/vue.js"></script>
+  <script>
+    let app = new Vue({
+      el: '#dv',
+      data: {
+        msg: 'test',
+        one: {
+          name: 'one\'name'
+        },
+        two: {
+          name: 'two\'name'
+        },
+        three: {
+          name: 'three\'name'
+        },
+      },
+      created () {
+        console.log('test')
+        console.log(this.one)
+        console.log(this.two)
+        console.log(this.three)
+        console.log(this.four)
+      }
+    })
+
+    console.log(app)
+  </script>
+</body>
+</html>

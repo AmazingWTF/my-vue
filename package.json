@@ -1,18 +1,17 @@
 {
-  "name": "my-vue",
+  "name": "vue-analysis-my",
   "version": "1.0.0",
   "description": "",
-  "main": "rollup.config.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "eslint": "^4.19.1",
-    "eslint-plugin-flowtype": "^2.46.1",
-    "flow": "^0.2.3",
-    "flow-bin": "^0.69.0",
-    "rollup": "^0.57.1"
+    "babel-core": "^6.26.0",
+    "rollup": "^0.57.1",
+    "rollup-plugin-babel": "^3.0.3",
+    "rollup-plugin-commonjs": "^9.1.0"
   }
 }
