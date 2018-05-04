@@ -24,6 +24,7 @@ class Observer {
       defineReactive(obj, keys[i], obj[keys[i]])
     }
   }
+
 }
 
 function observe (value) {
