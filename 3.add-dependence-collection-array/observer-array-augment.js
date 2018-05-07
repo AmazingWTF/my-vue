@@ -187,7 +187,7 @@ methodsToPath.forEach(method => {
     }
     if (inserted) ob.observeArray(inserted)
     ob.dep.notify()
-    return result 
+    return result
   }
   Object.defineProperty(arrayMethods, method, {
     value: mutator,
