@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+
+  <script src="./event-optimized.js"></script>
+  <script>
+
+
+    let event = new Event()
+    let fn1 = function () {
+      console.log('fn1 callback')
+    }
+    let fn2 = function () {
+      console.log('fn2 callback')
+    }
+    let fn3 = function () {
+      console.log('fn3 callback')
+    }
+    // // 一个事件绑定多个函数
+    // event.$on('test1', [fn1, fn2, fn3])
+    // event.$emit('test1')
+
+    // // 多个事件绑定同一个函数
+    // event.$on(['test1', 'test2'], fn1)
+    // event.$emit('test1')
+    // event.$emit('test2')
+
+    // $once 事件的解绑
+    event.$on('test1', fn1)
+    event.$once('test1', fn2)
+    event.$off('test1', [fn1, fn2])
+    event.$emit('test1')
+
+  </script>
+</body>
+
+</html>
