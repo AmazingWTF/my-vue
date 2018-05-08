@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+  <script src="./dist/index.js"></script>
+  <script>
+    // 实现类似于下面的效果
+    let app = new Vue({
+      data () {
+        return {
+          baseTest: 'baseTest',
+          objTest: {
+            stringA: 'stringA',
+            stringB: 'stringB'
+          }
+        }
+      },
+      methods: {
+        methodsTest () {
+          console.log('methodTest')
+          this.$emit('eventTest', '事件测试')
+        }
+      },
+      watch: {
+        'baseTest' (newVal, oldVal) {
+          console.log(`baseTest chage ${oldVal} => ${newVal}`)
+        },
+        'objTest.stringA' (newVal, oldVal) {
+          console.log(`objTest.stringA change ${oldVal} => ${newVal}`)
+        }
+      }
+    })
+
+    app.$on('eventTest', function (event) {
+      console.log(event)
+    })
+
+    app.methodsTest()
+
+
+  </script>
+</body>
+
+</html>
