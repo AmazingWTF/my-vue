@@ -60,7 +60,7 @@ class Event {
       return object
     }
     // 若没有事件对应的函数列表则不用处理
-    const cbs = object._events[eventName]
+    let cbs = object._events[eventName]
     if (!cbs) {
       return object
     }
@@ -76,8 +76,10 @@ class Event {
       // 处理一次取消多个的情况
       if (Array.isArray(fn)) {
         fn.forEach(fnc => this.$off(eventName, fnc))
+        return
       }
       while (i--) {
+        console.log(i)
         cb = cbs[i]
         if (cb === fn || cb.fn === fn) {
           cbs.splice(i, 1)
@@ -99,27 +101,27 @@ class Event {
 
 }
 
-// let event = new Event()
-// let fn1 = function () {
-//   console.log('fn1 callback')
-// }
-// let fn2 = function () {
-//   console.log('fn2 callback')
-// }
-// let fn3 = function () {
-//   console.log('fn3 callback')
-// }
-// // // 一个事件绑定多个函数
-// // event.$on('test1', [fn1, fn2, fn3])
-// // event.$emit('test1')
-
-// // // 多个事件绑定同一个函数
-// // event.$on(['test1', 'test2'], fn1)
-// // event.$emit('test1')
-// // event.$emit('test2')
-
-// // $once 事件的解绑
-// event.$on('test1', fn1)
-// event.$once('test1', fn2)
-// event.$off('test1', [fn1, fn2])
+let event = new Event()
+let fn1 = function () {
+  console.log('fn1 callback')
+}
+let fn2 = function () {
+  console.log('fn2 callback')
+}
+let fn3 = function () {
+  console.log('fn3 callback')
+}
+// // 一个事件绑定多个函数
+// event.$on('test1', [fn1, fn2, fn3])
 // event.$emit('test1')
+
+// // 多个事件绑定同一个函数
+// event.$on(['test1', 'test2'], fn1)
+// event.$emit('test1')
+// event.$emit('test2')
+
+// $once 事件的解绑
+event.$on('test1', fn1)
+event.$once('test1', fn2)
+event.$off('test1', [fn1, fn2])
+event.$emit('test1')
