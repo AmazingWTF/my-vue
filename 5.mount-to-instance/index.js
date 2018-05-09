@@ -2,6 +2,7 @@ import Event from './event/event'
 import proxy from './proxy'
 import observe from './observer/observer'
 import Watcher from './watcher'
+import Computed from './computed/computed'
 
 export default class Vue extends Event {
   constructor (options) {
@@ -21,6 +22,14 @@ export default class Vue extends Event {
         vm[k] = methods[k].bind(vm)
       }
     }
+    // 代理computed
+    const computed = options.computed
+    if (computed) {
+      for (let k in computed) {
+        new Computed(k, computed[k], vm)
+      }
+    }
+
     observe(vm._data)
 
     // watch 处理

@@ -1,5 +1,7 @@
 import Dep from './Dep'
-import isArray from '../util/index'
+import {
+  isArray
+} from '../util/index'
 import { protoAugment, copyAugment } from '../augment/index'
 
 let arrayProto = Array.prototype

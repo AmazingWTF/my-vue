@@ -138,6 +138,8 @@ var Vue = (function () {
 
   const isArray$1 = Array.isArray;
 
+  const noop = function () {};
+
   function protoAugment (target, src, keys) {
     target.__proto__ = src;
   }
@@ -303,6 +305,38 @@ var Vue = (function () {
     }
   }
 
+  // 将computed变成一个watcher实例，因为watcher会缓存结果在value属性
+  // 用watcher将computed的get添加为依赖
+  // vm实例get这个compute属性的时候直接return出watcher的value
+  // set的时候触发自定义的set
+
+  let uid$2 = 0;
+  class Computed {
+    constructor (key, option, ctx) {
+      this.uid = uid$2++;
+      this.key = key;
+      this.option = option;
+      this.ctx = ctx;
+      this._init();
+    }
+
+    _init () {
+      let watcher = new Watcher(
+        this.ctx,
+        this.option.get || noop,
+        noop
+      );
+      Object.defineProperty(this.ctx, this.key, {
+        enumerable: true,
+        configurable: true,
+        set: this.option.set || noop,
+        get: function () {
+          return watcher.value
+        }
+      });
+    }
+  }
+
   class Vue extends Event {
     constructor (options) {
       super();
@@ -321,6 +355,14 @@ var Vue = (function () {
           vm[k] = methods[k].bind(vm);
         }
       }
+      // 代理computed
+      const computed = options.computed;
+      if (computed) {
+        for (let k in computed) {
+          new Computed(k, computed[k], vm);
+        }
+      }
+
       observe(vm._data);
 
       // watch 处理

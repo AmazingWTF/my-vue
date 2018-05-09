@@ -19,6 +19,20 @@
           objTest: {
             stringA: 'stringA',
             stringB: 'stringB'
+          },
+          firstName: ' Jack',
+          lastName: 'Tomas'
+        }
+      },
+      computed: {
+        fullName: {
+          get: function () {
+            return this.lastName + this.firstName
+          },
+          set: function (newVal) {
+            const name = newVal.split(' ')
+            this.firstName = name[1]
+            this.lastName = name[0]
           }
         }
       },
@@ -44,6 +58,11 @@
     })
 
     app.methodsTest()
+
+    debugger
+    app.fullName = 'changeLast changeFirst'
+    console.log(app.firstName)
+    console.log(app.lastName)
 
 
   </script>
