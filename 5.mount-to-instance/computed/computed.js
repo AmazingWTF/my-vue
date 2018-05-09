@@ -10,7 +10,7 @@ import {
 
 let uid = 0
 export default class Computed {
-  constructor (key, option, ctx) {
+  constructor (ctx, key, option) {
     this.uid = uid++
     this.key = key
     this.option = option
@@ -22,13 +22,20 @@ export default class Computed {
     let watcher = new Watcher(
       this.ctx,
       this.option.get || noop,
-      noop
+      noop,
+      // 是一个lazy watcher
+      {lazy: true}
     )
+
     Object.defineProperty(this.ctx, this.key, {
       enumerable: true,
       configurable: true,
       set: this.option.set || noop,
       get: function () {
+        // 如果是 dirty watcher
+        if (watcher.dirty) {
+          watcher.evaluate()
+        }
         return watcher.value
       }
     })

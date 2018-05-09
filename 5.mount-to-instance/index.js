@@ -4,9 +4,12 @@ import observe from './observer/observer'
 import Watcher from './watcher'
 import Computed from './computed/computed'
 
+let uid = 0
+
 export default class Vue extends Event {
   constructor (options) {
     super()
+    this.uid = uid++
     this._init(options)
   }
 
@@ -14,6 +17,8 @@ export default class Vue extends Event {
     let vm = this
     // 代理data
     vm._data = options.data.call(vm)
+    observe(vm._data)
+    
     proxy(vm, vm._data)
     // 代理methods
     const methods = options.methods
@@ -26,11 +31,10 @@ export default class Vue extends Event {
     const computed = options.computed
     if (computed) {
       for (let k in computed) {
-        new Computed(k, computed[k], vm)
+        new Computed(vm, k, computed[k])
       }
     }
 
-    observe(vm._data)
 
     // watch 处理
     // 此处需要填充别的内容，暂为测试可用

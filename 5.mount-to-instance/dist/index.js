@@ -116,8 +116,11 @@ var Vue = (function () {
     }
   }
 
+  let uid$1 = 0;
+
   class Dep {
     constructor () {
+      this.id = ++uid$1;
       this.subs = [];
     }
 
@@ -271,16 +274,22 @@ var Vue = (function () {
     });
   }
 
-  let uid$1 = 0;
+  let uid$2 = 0;
 
   class Watcher {
-    constructor (obj, getter, cb) {
+    constructor (obj, getter, cb, options) {
       this.obj = obj;
       this.getter = getter;
       this.cb = cb;
       this.deps = [];
-      this.id = ++uid$1;
+      this.id = ++uid$2;
       this.value = this.get();
+      if (options) {
+        this.lazy = !!options.lazy;
+      } else {
+        this.lazy = false;
+      }
+      this.dirty = this.lazy;
     }
 
     get () {
@@ -293,6 +302,10 @@ var Vue = (function () {
       this.deps.push(dep);
     }
     update () {
+      if (this.lazy) {
+        this.dirty = true;
+        return
+      }
       const newValue = this.getter.call(this.obj);
       const oldValue = this.value;
       this.value = newValue;
@@ -303,6 +316,11 @@ var Vue = (function () {
       this.deps.forEach(dep => dep.removeSub(this));
       this.deps = [];
     }
+    evaluate () {
+      this.value = this.getter.call(this.obj);
+      // 脏检查机制触发后，充值dirty
+      this.dirty = false;
+    }
   }
 
   // 将computed变成一个watcher实例，因为watcher会缓存结果在value属性
@@ -310,10 +328,10 @@ var Vue = (function () {
   // vm实例get这个compute属性的时候直接return出watcher的value
   // set的时候触发自定义的set
 
-  let uid$2 = 0;
+  let uid$3 = 0;
   class Computed {
-    constructor (key, option, ctx) {
-      this.uid = uid$2++;
+    constructor (ctx, key, option) {
+      this.uid = uid$3++;
       this.key = key;
       this.option = option;
       this.ctx = ctx;
@@ -324,22 +342,32 @@ var Vue = (function () {
       let watcher = new Watcher(
         this.ctx,
         this.option.get || noop,
-        noop
+        noop,
+        // 是一个lazy watcher
+        {lazy: true}
       );
+
       Object.defineProperty(this.ctx, this.key, {
         enumerable: true,
         configurable: true,
         set: this.option.set || noop,
         get: function () {
+          // 如果是 dirty watcher
+          if (watcher.dirty) {
+            watcher.evaluate();
+          }
           return watcher.value
         }
       });
     }
   }
 
+  let uid$4 = 0;
+
   class Vue extends Event {
     constructor (options) {
       super();
+      this.uid = uid$4++;
       this._init(options);
     }
 
@@ -347,6 +375,8 @@ var Vue = (function () {
       let vm = this;
       // 代理data
       vm._data = options.data.call(vm);
+      observe(vm._data);
+      
       proxy(vm, vm._data);
       // 代理methods
       const methods = options.methods;
@@ -359,11 +389,10 @@ var Vue = (function () {
       const computed = options.computed;
       if (computed) {
         for (let k in computed) {
-          new Computed(k, computed[k], vm);
+          new Computed(vm, k, computed[k]);
         }
       }
 
-      observe(vm._data);
 
       // watch 处理
       // 此处需要填充别的内容，暂为测试可用

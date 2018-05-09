@@ -13,57 +13,71 @@
   <script>
     // 实现类似于下面的效果
     let app = new Vue({
-      data () {
+      data() {
         return {
           baseTest: 'baseTest',
           objTest: {
             stringA: 'stringA',
             stringB: 'stringB'
           },
-          firstName: ' Jack',
-          lastName: 'Tomas'
+          firstName: 'first',
+          lastName: 'last'
         }
       },
       computed: {
-        fullName: {
-          get: function () {
-            return this.lastName + this.firstName
+        computedValue: {
+          get() {
+            console.log('测试缓存')
+            return this.firstName + ' ' + this.lastName
+          }
+        },
+        computedSet: {
+          get() {
+            return this.firstName + ' ' + this.lastName
           },
-          set: function (newVal) {
-            const name = newVal.split(' ')
-            this.firstName = name[1]
-            this.lastName = name[0]
+          set(value) {
+            let names = value.split(' ')
+            this.firstName = names[0]
+            this.lastName = names[1]
           }
         }
       },
       methods: {
-        methodsTest () {
+        methodsTest() {
           console.log(this)
           console.log('methodTest')
           this.$emit('eventTest', '事件测试')
         }
       },
       watch: {
-        'baseTest' (newVal, oldVal) {
+        'baseTest'(newVal, oldVal) {
           console.log(`baseTest chage ${oldVal} => ${newVal}`)
         },
-        'objTest.stringA' (newVal, oldVal) {
+        'objTest.stringA'(newVal, oldVal) {
           console.log(`objTest.stringA change ${oldVal} => ${newVal}`)
         }
       }
     })
 
-    app.$on('eventTest', function (event) {
-      console.log(event)
-    })
+    // app.$on('eventTest', function (event) {
+    //   console.log(event)
+    // })
 
-    app.methodsTest()
+    // app.methodsTest()
 
-    debugger
-    app.fullName = 'changeLast changeFirst'
-    console.log(app.firstName)
-    console.log(app.lastName)
+    // console.log(app.computedValue)
+    // console.log(app.computedValue)
+    // console.log(app.computedValue)
+    // console.log(app.computedValue)
 
+    app.computedSet = 'changeLast changeFirst'
+    console.log(app.computedValue)
+    console.log(app.computedValue)
+    console.log(app.computedValue)
+    console.log(app.computedValue)
+    // console.log(app.firstName)
+    // console.log(app.lastName)
+    // console.log(app.computedSet)
 
   </script>
 </body>
