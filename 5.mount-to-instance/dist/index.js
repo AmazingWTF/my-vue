@@ -143,6 +143,51 @@ var Vue = (function () {
 
   const noop = function () {};
 
+  function mergeOptions (parent, child) {
+    //  data  methods  watch  computed
+    let options = {};
+
+    // 合并data，同名覆盖
+    options.data = mergeData(parent.data, child.data);
+    // 合并methods，同名覆盖
+    options.methods = Object.assign(parent.methods || {}, child.methods);
+    // 合并watch，同名合并成为数组
+    options.watch = mergeWatch(parent.watch, child.watch);
+    // 合并computed，同名覆盖
+    options.computed = Object.assign(parent.computed || {}, child.computed);
+
+    return options
+  }
+
+  function mergeData(parentValue, childValue) {
+    if (!parentValue) {
+      return childValue
+    }
+    if (!childValue) {
+      return parentValue
+    }
+    return function mergeFnc () {
+      return Object.assign(parentValue.call(this), childValue.call(this))
+    }
+  }
+
+  // watcher比较特殊，需要全部保留，放在数组中
+  function mergeWatch (parentVal, childVal) {
+    if (!childVal) return Object.assign(parentVal || {})
+    let ret = Object.assign({}, parentVal);
+    for (let key in childVal) {
+      let parent = ret[key];
+      let child = childVal[key];
+      if (parent && !isArray$1(parent)) {
+        parent = [parent];
+      }
+      ret[key] = parent
+        ? parent.concat(child)
+        : isArray$1(child) ? child : [child];
+    }
+    return ret
+  }
+
   function protoAugment (target, src, keys) {
     target.__proto__ = src;
   }
@@ -392,19 +437,47 @@ var Vue = (function () {
           new Computed(vm, k, computed[k]);
         }
       }
-
-
       // watch 处理
-      // 此处需要填充别的内容，暂为测试可用
       const watches = options.watch;
-        for (let k in watches) {
-          new Watcher(vm, function () {
-            return k.split('.').reduce((obj, key) => obj[key], vm)
-          }, watches[k]);
-        }
+      for (let k in watches) {
+        new Watcher(vm, function () {
+          return k.split('.').reduce((obj, key) => obj[key], vm)
+        }, watches[k]);
+      }
+      // 合并options
+      vm.$options = mergeOptions(
+        this.constructor.options,
+        options,
+        vm
+      );
     }
-
   }
+
+  Vue.options = {
+    components: {},
+    _base: Vue
+  };
+
+  Vue.extend = function (extendOptions) {
+    const Super = this;
+
+    // 完全继承自Vue构造函数
+    class Sub extends Super {
+      constructor (options) {
+        super(options);
+      }
+    }
+    // 
+    Sub.options = mergeOptions(
+      Super.options, // 公共属性，Vue构造函数的属性
+      extendOptions  // 作为extend方法参数的options
+    );
+
+    Sub.super = Super; // 为了将Sub的super变成Vue实例，以便Sub调用extend使用super属性
+    Sub.extend = Super.extend; // 将Sub的extend绑定到Sub，以便调用extend
+
+    return Sub
+  };
 
   return Vue;
 
