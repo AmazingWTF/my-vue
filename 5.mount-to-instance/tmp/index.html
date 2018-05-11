@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+
+  <script src="./dist/index.js"></script>
+
+  <script>
+    let app = new Vue({
+      data: {
+        msg: 'hello world',
+        num1: 1,
+        num2: 2,
+        obj: {
+          name: 'test obj'
+        }
+      },
+      watch: {
+        msg (newVal, oldVal) {
+          console.log(`msg: ${oldVal} => ${newVal}`)
+        }
+      },
+      computed: {
+        testComputed1: {
+          get () {
+            return this.msg + '--computed--' + this.num1
+          }
+        },
+        testComputed2 () {
+          return this.msg + '--computed--' + this.num2
+        }
+      }
+    })
+
+    app.$on('test-on', function () {
+      console.log(' on-event trigger')
+    })
+
+    app.$on('test-once', function () {
+      console.log(' once-on-event trigger')
+    })
+
+    app.$once('test-once', function () {
+      console.log(' once-event trigger')
+    })
+
+    app.$off('test-once')
+
+    app.$emit('test-on')
+    app.$emit('test-on')
+    app.$emit('test-on')
+    app.$emit('test-once')
+    app.$emit('test-once')
+    app.$emit('test-once')
+
+    
+  </script>
+</body>
+</html>

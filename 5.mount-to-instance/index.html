@@ -81,57 +81,57 @@
 
 
 
-    let child = Vue.extend({
-      data () {
-        return {
-          msg: 'child',
-          name: 'child'
-        }
-      },
-      methods: {
-        test: function () {
-          console.log('test child method')
-        }
-      },
-      computed: {
-        com: {
-          get () {
-            return this.msg + '---' + this.name
-          },
-          set (newVal) {
-            let val = newVal.split('---')
-            this.msg = val[0]
-            this.name = val[1]
-          }
-        }
-      }
-    })
+    // let child = Vue.extend({
+    //   data () {
+    //     return {
+    //       msg: 'child',
+    //       name: 'child'
+    //     }
+    //   },
+    //   methods: {
+    //     test: function () {
+    //       console.log('test child method')
+    //     }
+    //   },
+    //   computed: {
+    //     com: {
+    //       get () {
+    //         return this.msg + '---' + this.name
+    //       },
+    //       set (newVal) {
+    //         let val = newVal.split('---')
+    //         this.msg = val[0]
+    //         this.name = val[1]
+    //       }
+    //     }
+    //   }
+    // })
 
-    let subVue = new child ({
-      data () {
-        return {
-          msg: 'child change',
-          name: 'child change'
-        }
-      },
-      methods: {
-        test: function () {
-          console.log('test child method change')
-        }
-      },
-      computed: {
-        com: {
-          get () {
-            return this.msg + '+++' + this.name
-          },
-          set (newVal) {
-            let val = newVal.split('+++')
-            this.msg = val[0]
-            this.name = val[1]
-          }
-        }
-      }
-    })
+    // let subVue = new child ({
+    //   data () {
+    //     return {
+    //       msg: 'child change',
+    //       name: 'child change'
+    //     }
+    //   },
+    //   methods: {
+    //     test: function () {
+    //       console.log('test child method change')
+    //     }
+    //   },
+    //   computed: {
+    //     com: {
+    //       get () {
+    //         return this.msg + '+++' + this.name
+    //       },
+    //       set (newVal) {
+    //         let val = newVal.split('+++')
+    //         this.msg = val[0]
+    //         this.name = val[1]
+    //       }
+    //     }
+    //   }
+    // })
 
   </script>
 </body>

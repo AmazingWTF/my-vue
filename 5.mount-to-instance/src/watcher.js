@@ -43,7 +43,7 @@ export default class Watcher {
   }
   evaluate () {
     this.value = this.getter.call(this.obj)
-    // 脏检查机制触发后，充值dirty
+    // 脏检查机制触发后，重置dirty
     this.dirty = false
   }
 }
