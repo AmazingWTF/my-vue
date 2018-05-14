@@ -28,37 +28,77 @@
       computed: {
         testComputed1: {
           get () {
+            console.log('get -------')
             return this.msg + '--computed--' + this.num1
+          },
+          set (newVal) {
+            [this.msg, this.num1] = newVal
           }
         },
         testComputed2 () {
+          console.log('get num2 -----')
           return this.msg + '--computed--' + this.num2
         }
       }
     })
 
-    app.$on('test-on', function () {
-      console.log(' on-event trigger')
+    console.log(app.testComputed2)
+    console.log(app.testComputed2)
+    console.log(app.testComputed2)
+
+    app.num2 = 99
+
+    console.log(app.testComputed2)
+    console.log(app.testComputed2)
+    console.log(app.testComputed2)
+
+
+    let subVue = Vue.extend({
+      data () {
+        return {
+          dataTest: 1
+        }
+      },
+      methods: {
+        methodTest () {
+          console.log('methodTest')
+        }
+      },
+      watch: {
+        dataTest (oldVal, newVal) {
+          console.log(`dataTest had changed '${oldVal}' => '${newVal}'`)
+        }
+      },
+      computed: {
+        computedTest () {
+          return this.dataTest + 'is computed'
+        }
+      }
     })
 
-    app.$on('test-once', function () {
-      console.log(' once-on-event trigger')
+    let test = new subVue({
+      data () {
+        return {
+          dataTest: 99
+        }
+      },
+      methods: {
+        methodTest () {
+          console.log('----sub----MethodTest')
+        }
+      },
+      watch: {
+        dataTest (oldVal, newVal) {
+          console.log(`----sub---- dataTest had changed '${oldVal}' => '${newVal}'`)
+        }
+      },
+      computed: {
+        computedTest () {
+          return this.dataTest + 'is computed ----sub----'
+        }
+      }
     })
 
-    app.$once('test-once', function () {
-      console.log(' once-event trigger')
-    })
-
-    app.$off('test-once')
-
-    app.$emit('test-on')
-    app.$emit('test-on')
-    app.$emit('test-on')
-    app.$emit('test-once')
-    app.$emit('test-once')
-    app.$emit('test-once')
-
-    
   </script>
 </body>
 </html>

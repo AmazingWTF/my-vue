@@ -1,7 +1,10 @@
 import Dep from './observer/Dep'
 import Watcher from './wather'
 import observe from './observer/observer'
-import { noop } from './util/index'
+import { 
+  noop,
+  mergeOptions
+ } from './util/index'
 import Computed from './computed/computed'
 import Event from './event/event'
 
@@ -10,12 +13,17 @@ let uid = 0
 export default class Vue extends Event {
   constructor (options) {
     super()
-    this.id = uid++
-    this.$options = options
-    this._init()
+    this._init(options)
   }
-
-  _init () {
+  
+  _init (options) {
+    let vm = this
+    vm.id = uid++
+    vm.$options = mergeOptions(
+      vm.constructor.options,
+      options,
+      vm
+    )
     this._initData()
     this._initWatch()
     this._initComputed()
@@ -52,48 +60,36 @@ export default class Vue extends Event {
   }
 
   _initComputed () {
+    this._comupted = []
     const computeds = this.$options.computed
     if (!computeds) return
     for (let key in computeds) {
-      new Computed(this, key, computeds[key])
+      this._comupted.push(new Computed(this, key, computeds[key]))
     }
   }
 }
 
-// let obj = {
-//   msg: 'hello world',
-//   num1: 1,
-//   num2: 2,
-//   obj: {
-//     name: 'test obj'
-//   },
-//   arr: [
-//     1, 2, 3, 4
-//   ]
-// }
+Vue.options = {
+  components: {},
+  _base: Vue
+}
 
-// observe(obj)
+Vue.extend = function (extendOptions) {
+  const Super = this
+  
+  class Sub extends Super {
+    constructor (options) {
+      super(options)
+    }
+  }
 
-// let watcher1 = new Watcher(obj, function () {
-//   return this.num1 + this.obj.name + this.num2
-// }, function (newVal) {
-//   console.log(`${this.num1} + ${this.obj.name} + ${this.num2} = ${newVal} \n`)
-// })
+  Sub.options = mergeOptions(
+    Super.options,
+    extendOptions
+  )
 
-// obj.num1 = 11
-// obj.obj.name = 'change name'
-// console.log('----------')
+  Sub.super = Super
+  Sub.extend = Super.extend
 
-// let watcher2 = new Watcher(obj, function () {
-//   return this.arr.reduce((sum, num) => sum + num)
-// }, function (newVal) {
-//   console.log(`和为：${newVal}`)
-// })
-
-// console.log(obj)
-
-// obj.arr.push(10)
-// obj.arr.pop()
-// obj.arr.unshift(10)
-// obj.arr.shift()
-// obj.arr.splice(0, 1, 10)
+  return Sub
+}

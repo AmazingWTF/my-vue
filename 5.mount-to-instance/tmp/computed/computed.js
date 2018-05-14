@@ -2,6 +2,7 @@ import {
   noop,
   bind
 } from '../util/index'
+import Watcher from '../wather'
 
 export default class Computed {
   constructor (ctx, key, option) {
@@ -13,19 +14,30 @@ export default class Computed {
   }
 
   _init () {
-    const isFn = typeof this.option === 'function'
-    const ctx = this.ctx
-    let def = {
-      enumerable: true,
-      configurable: true
-    }
-    if (isFn) {
-      def.get = bind(this.option, ctx)
-      def.set = noop
+    let getter = noop
+    this._watch = []
+    if (typeof this.option === 'function') {
+      getter = this.option
     } else {
-      def.set = bind(this.option.set || noop, ctx)
-      def.get = bind(this.option.get || noop, ctx)
+      getter = this.option.get
     }
-    Object.defineProperty(ctx, this.key, def)
+    let watcher = new Watcher(
+      this.ctx,
+      getter || noop,
+      noop,
+      { lazy: true }
+    )
+    this._watch.push(watcher)
+    Object.defineProperty(this.ctx, this.key, {
+      enumerable: true,
+      configurable: true,
+      set: this.option.set || noop,
+      get () {
+        if (watcher.dirty) {
+          watcher.evaluate()
+        }
+        return watcher.value
+      }
+    })
   }
 }

@@ -28,20 +28,25 @@ var Vue = (function () {
   let uid$1 = 0;
 
   class Watcher {
-    constructor (ctx, getter, cb) {
+    constructor (ctx, getter, cb, options) {
       this.ctx = ctx;
       this.getter = getter;
       this.cb = cb;
       this.id = uid$1++;
       this.deps = [];
       this.value = this.get();
+      if (options) {
+        this.lazy = !!options.lazy;
+      } else {
+        this.lazy = false;
+      }
+      this.dirty = this.lazy;
     }
 
     get () {
       Dep.target = this;
       const value = this.getter.call(this.ctx);
       Dep.target = null;
-      // this.value = value
       return value
     }
     addDep (dep) {
@@ -52,10 +57,18 @@ var Vue = (function () {
       this.deps = [];
     }
     update () {
+      if (this.lazy) {
+        this.dirty = true;
+        return
+      }
       const newVal = this.getter.call(this.ctx);
       const oldVal = this.value;
       this.value = newVal;
       this.cb.call(this.ctx, newVal, oldVal);
+    }
+    evaluate () {
+      this.value = this.getter.call(this.ctx);
+      this.dirty = false;
     }
   }
 
@@ -99,6 +112,56 @@ var Vue = (function () {
     });
   });
 
+  function isFn (value) {
+    return typeof value === 'function'
+  }
+
+  const mergeOptions = function (parent, child) {
+    // data methods computed watch
+    let options = {};
+    // 合并data 同名覆盖
+    options.data = mergeData(parent.data, child.data);
+    // 合并methods 同名覆盖
+    options.methods = merge(parent.methods, child.methods);
+    //合并computed 同名覆盖
+    options.computed = merge(parent.computed, child.computed);
+    // 合并watch 同名合并成为数组
+    options.watch = mergeWatch(parent.watch, child.watch);
+
+    return options
+  };
+
+  function merge (parent, child) {
+    if (!parent) return child
+    if (!child) return parent
+    return Object.assign(parent, child)
+  }
+
+  // return一个函数(因为data必须是个函数)
+  function mergeData (parent, child) {
+    if (!parent) return child
+    if (!child) return parent
+    return function mergeFnc () {
+      return Object.assign(isFn(parent) ? parent.call(this) : parent, isFn(child) ? child.call(this) : child)
+    }
+  }
+
+  function mergeWatch (parent, child) {
+    if (!child) return Object.create(parent || {})
+    let res = Object.assign({}, parent);
+    for (let k in child) {
+      let p = res[k];
+      let c = child[k];
+      if (p && !Array.isArray(p)) {
+        p = [p];
+      }
+      res[k] = p
+        ? p.concat(c)
+        : Array.isArray(c) ? c : [c];
+    }
+    return res
+  }
+
   const isArray = Array.isArray;
 
   const noop = function () {};
@@ -111,19 +174,6 @@ var Vue = (function () {
       configurable: true
     });
   };
-
-  // 处理参数不定时bind的绑定问题(bind绑定，参数会变成伪数组)
-  // 源码中说因为更快，so.. whatever
-  function bind (fn, ctx) {
-    return function (a) {
-      const l = arguments.length;
-      return l
-        ? l > 1
-          ? fn.apply(ctx, arguments)
-          : fn.call(ctx, a)
-        : fn.call(ctx)
-    }
-  }
 
   let uid$2 = 0;
 
@@ -224,20 +274,31 @@ var Vue = (function () {
     }
 
     _init () {
-      const isFn = typeof this.option === 'function';
-      const ctx = this.ctx;
-      let def$$1 = {
-        enumerable: true,
-        configurable: true
-      };
-      if (isFn) {
-        def$$1.get = bind(this.option, ctx);
-        def$$1.set = noop;
+      let getter = noop;
+      this._watch = [];
+      if (typeof this.option === 'function') {
+        getter = this.option;
       } else {
-        def$$1.set = bind(this.option.set || noop, ctx);
-        def$$1.get = bind(this.option.get || noop, ctx);
+        getter = this.option.get;
       }
-      Object.defineProperty(ctx, this.key, def$$1);
+      let watcher = new Watcher(
+        this.ctx,
+        getter || noop,
+        noop,
+        { lazy: true }
+      );
+      this._watch.push(watcher);
+      Object.defineProperty(this.ctx, this.key, {
+        enumerable: true,
+        configurable: true,
+        set: this.option.set || noop,
+        get () {
+          if (watcher.dirty) {
+            watcher.evaluate();
+          }
+          return watcher.value
+        }
+      });
     }
   }
 
@@ -311,12 +372,17 @@ var Vue = (function () {
   class Vue extends Event {
     constructor (options) {
       super();
-      this.id = uid$4++;
-      this.$options = options;
-      this._init();
+      this._init(options);
     }
-
-    _init () {
+    
+    _init (options) {
+      let vm = this;
+      vm.id = uid$4++;
+      vm.$options = mergeOptions(
+        vm.constructor.options,
+        options,
+        vm
+      );
       this._initData();
       this._initWatch();
       this._initComputed();
@@ -353,51 +419,39 @@ var Vue = (function () {
     }
 
     _initComputed () {
+      this._comupted = [];
       const computeds = this.$options.computed;
       if (!computeds) return
       for (let key in computeds) {
-        new Computed(this, key, computeds[key]);
+        this._comupted.push(new Computed(this, key, computeds[key]));
       }
     }
   }
 
-  // let obj = {
-  //   msg: 'hello world',
-  //   num1: 1,
-  //   num2: 2,
-  //   obj: {
-  //     name: 'test obj'
-  //   },
-  //   arr: [
-  //     1, 2, 3, 4
-  //   ]
-  // }
+  Vue.options = {
+    components: {},
+    _base: Vue
+  };
 
-  // observe(obj)
+  Vue.extend = function (extendOptions) {
+    const Super = this;
+    
+    class Sub extends Super {
+      constructor (options) {
+        super(options);
+      }
+    }
 
-  // let watcher1 = new Watcher(obj, function () {
-  //   return this.num1 + this.obj.name + this.num2
-  // }, function (newVal) {
-  //   console.log(`${this.num1} + ${this.obj.name} + ${this.num2} = ${newVal} \n`)
-  // })
+    Sub.options = mergeOptions(
+      Super.options,
+      extendOptions
+    );
 
-  // obj.num1 = 11
-  // obj.obj.name = 'change name'
-  // console.log('----------')
+    Sub.super = Super;
+    Sub.extend = Super.extend;
 
-  // let watcher2 = new Watcher(obj, function () {
-  //   return this.arr.reduce((sum, num) => sum + num)
-  // }, function (newVal) {
-  //   console.log(`和为：${newVal}`)
-  // })
-
-  // console.log(obj)
-
-  // obj.arr.push(10)
-  // obj.arr.pop()
-  // obj.arr.unshift(10)
-  // obj.arr.shift()
-  // obj.arr.splice(0, 1, 10)
+    return Sub
+  };
 
   return Vue;
 

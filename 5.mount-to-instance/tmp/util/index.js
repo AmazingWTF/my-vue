@@ -1,3 +1,5 @@
+export * from './options'
+
 export const isArray = Array.isArray
 
 export const assign = Object.prototype.assign
