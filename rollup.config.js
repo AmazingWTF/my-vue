@@ -1,8 +1,9 @@
 export default {
-  input: 'src/vue.js',
+  input: 'src/index.js',
   output: {
+    name: 'Vue',
     file: 'dist/vue.js',
-    format: 'cjs'
+    format: 'iife'
   },
   
 }
