@@ -1,4 +1,4 @@
-import Vue from "../instance";
+import Vue from "../instance"
 import config from '../config'
 import { warn } from './debug'
 import { 
@@ -9,7 +9,7 @@ import {
   camelize,
   capitalize,
   isBuiltInTag
-} from "../../shared/util";
+} from "../../shared/util"
 
 
 
@@ -32,6 +32,7 @@ function normalizeComponents (options) {
       }
       def = components[key]
       if (isPlainObject(def)) {
+        // 继承自Vue构造函数并且merge了def属性的类(可以理解为扩展后的Vue)
         components[key] = Vue.extend(def)
       }
     }
@@ -71,17 +72,16 @@ function normalizeDirectives (options) {
   if (dirs) {
     for (const key in dirs) {
       const def = dirs[key]
-      if (typeof def === 'function') {
+      if (typeof def === 'function') { // 直接传入函数，只关心bind和update两个钩子
         dirs[key] = { bind: def, update: def }
       }
     }
   }
 }
 
-
 /**
  * 将两个option对象合并成为一个
- * 同时用于实例化和继承上的核心方法
+ * 同时用于实例化和继承的核心方法
  */
 export function mergeOptions (parent, child, vm) {
   normalizeComponents(child)

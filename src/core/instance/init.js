@@ -19,10 +19,13 @@ export function initMixin (Vue) {
     } else {
       vm.$options = mergeOptions(resolveConstructorOptions(vm), options || {}, vm)
     }
-    // 生产env 否则 initProxy(vm)
-    vm._renderProxy = vm
+    if (process.env.NODE_ENV !== 'production') {
+      initProxy(vm)
+    } else {
+      vm._renderProxy = vm
+    }
     vm._self = vm
-    // initLifecycle(vm)
+    initLifecycle(vm)
     // initEvents(vm)
     // callHook(vm, 'beforeCreate')
     // initState(vm)
@@ -46,12 +49,23 @@ function initInternalComponent (vm, options) {
   }
 }
 
+/**
+ * 将传入的实例的options属性和其父类的options(存在的话)merge
+ * 
+ * @param {Component} vm
+ * @return {object} - 合并后的options
+ */
 function resolveConstructorOptions (vm) {
   const Ctor = vm.constructor
   let options = Ctor.options
+  // 说明此实例是由extend出来的构造函数实例化出来的
   if (Ctor.super) {
+    // 父类此时的options
     const superOptions = Ctor.super.options
+    // 父类extend出当前构造函数时的options
     const cachedSuperOptions = Ctor.superOptions
+    // super 的 option 发生了变化
+    // i.e. 这里应该是直接换了个对象，寻址改变了，否则改变属性的话，不会不相等
     if (superOptions !== cachedSuperOptions) {
       Ctor.superOptions = superOptions
       options = Ctor.options = mergeOptions(superOptions, Ctor.extendOptions)
