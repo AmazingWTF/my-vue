@@ -2,9 +2,9 @@ import rollupPluginBabel from 'rollup-plugin-babel'
 import rollupPluginCommonjs from 'rollup-plugin-commonjs'
 
 export default {
-  input: 'src/vue.js',
+  input: 'src/core/observer/watcher.js',
   output: {
-    file: 'dist/vue.js',
+    file: 'dist/watcher.js',
     format: 'cjs'
   },
   plugins: [

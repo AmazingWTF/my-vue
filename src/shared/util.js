@@ -1,3 +1,15 @@
+
+// 移除数组中的某一项
+export function remove (arr, item) {
+  if (arr.length) {
+    const index = arr.indexOf(item)
+    if (index > -1) {
+      return arr.splice(index, 1)
+    }
+  }
+}
+
+
 // 将传入的值变成字符串
 export function _toString (val) {
   return val === null ? '' : typeof val === 'object' ? JSON.stringify(val, null, 2) : String(val)
@@ -127,7 +139,7 @@ export const no = () => false
 // 在编译模块过程中生成一个静态的键名字符串
 export function genStaticKeys (modules) {
   return modules.reduce((keys, m) => {
-    return keys.concat(m.staticKeys, || [])
+    return keys.concat(m.staticKeys || [])
   }, []).join(',')
 }
 

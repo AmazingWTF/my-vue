@@ -6,12 +6,15 @@
 </head>
 <body>
 
-<script src="../dist/vue.js"></script>
+<script src="../dist/watcher.js"></script>
 <script>
-  console.log(vue)
-  for (var k in vue) {
-    console.log(k)
-  }
+  let o = new Observer({
+    name: 'test',
+    num: 11
+  })
+
+  let watcher1 = new Watcher()
+
 </script>
 </body>
 </html>

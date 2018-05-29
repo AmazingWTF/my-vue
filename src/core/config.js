@@ -1,4 +1,4 @@
-import { no, noop } from 'shared/util'
+import { no, noop } from '../shared/util'
 
 const config = {
   // option合并策略

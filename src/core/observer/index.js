@@ -1,5 +1,5 @@
 import config from '../config'
-import Dep from '/dep'
+import Dep from './dep'
 import { arrayMethods } from './array'
 import {
   def,
@@ -9,7 +9,6 @@ import {
   hasOwn,
   warn
 } from '../util/index'
-import { prototype } from 'module';
 
 // getOwnPropertyNames 可以获取enumerable为false的属性名，keys不能(非继承属性)
 const arrayKeys = Object.getOwnPropertyNames(arrayMethods)
