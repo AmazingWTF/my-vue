@@ -35,3 +35,19 @@ export function updateListeners (on, oldOn, add, remove) {
     }
   }
 }
+
+function arrInvoker (arr) {
+  return function (ev) {
+    const single = arguments.length === 1
+    for (let i = 0; i < arr.length; i++) {
+      single ? arr[i](ev) : arr[i].apply(null, arguments)
+    }
+  }
+}
+
+function fnInvoker (o) {
+  return function (ev) {
+    const single = arguments.length === 1
+    single ? o.fn(ev) : o.fn.apply(null, arguments)
+  }
+}

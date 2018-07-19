@@ -7,3 +7,8 @@ git commit version: e9ecdfe1c0f695396ce790f9637787239d180804
     继承自 Emitter(on, once, off, emmit, applyEmit)
     根据传递的数据类型将数据的原型对象(__proto__)属性改写（数组里面是改写原生方法，然后将发生的变化提交到mutation事件处理, 对象中则是使用convert方法将普通对象转化为getter/setter对象，在get和set事件中触发相应事件）
     on、once 等方法在当前observer对象中添加 _cbs 属性(Array)，存储注册的监听事件；emit事件则是遍历执行对应事件的所有注册事件
+
+#### event
+    core/instance/evnets.js
+    事件处理函数initEvent -> vdom/helpers  updataListeners函数 处理新旧监听事件
+    (ps: capture标识暂未发现用途)
