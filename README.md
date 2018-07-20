@@ -12,3 +12,6 @@ git commit version: e9ecdfe1c0f695396ce790f9637787239d180804
     core/instance/evnets.js
     事件处理函数initEvent -> vdom/helpers  updataListeners函数 处理新旧监听事件
     (ps: capture标识暂未发现用途)
+
+#### compiler
+    compiler/index.js
