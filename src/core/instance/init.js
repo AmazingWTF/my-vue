@@ -30,7 +30,7 @@ export function initMixin (Vue) {
     // callHook(vm, 'beforeCreate')
     // initState(vm)
     // callHook(vm, 'created')
-    // initRender(vm)
+    initRender(vm)
   }
 }
 
