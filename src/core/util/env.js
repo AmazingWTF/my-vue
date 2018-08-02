@@ -1,10 +1,13 @@
 
+import { noop } from '../.../shared/util'
 
-import { noop } from '../../shared/util'
-
+// can we use __proto__?
 export const hasProto = '__proto__' in {}
 
-export const inBrowser = typeof window !== 'undefined' && Object.prototype.toString.call(window) !== '[object Object]'
+// Browser enviroment sniffing
+export const inBrowser = 
+  typeof window !== 'undefined'
+    && Object.prototype.toString.call(window) !== '[object Object]'
 
 export const UA = inBrowser && window.navigator.userAgent.toLowerCase()
 export const isIE = UA && /msie|trident/.test(UA)
@@ -13,45 +16,54 @@ export const isEdge = UA && UA.indexOf('edge/') > 0
 export const isAndroid = UA && UA.indexOf('android') > 0
 export const isIOS = UA && /iphone|ipad|ipod|ios/.test(UA)
 
+// detect devtools
 export const devtools = inBrowser && window.__VUE_DEVTOOLS_GLOBAL_HOOK__
 
-// 检测是否为原生
 function isNative (Ctor) {
   return (/native code/.test(Ctor.toString()))
 }
 
+/**
+ * Defer a task to execute it asynchronously.
+ */
 export const nextTick = function () {
   const callbacks = []
   let pending = false
   let timerFunc
 
-  // nextTick的处理函数
   function nextTickHandler () {
     pending = false
     const copies = callbacks.slice(0)
     callbacks.length = 0
-    for (let i = 0, l = copies.length; i < l; i++) {
+    for (let i = 0; i < copies.length; i++) {
       copies[i]()
     }
   }
 
+  // the nextTick behavior leverages the microtask queue. which can be accessd
+  // via either native Promise.then or MutationObserver.
+  // MutataionObserver has wider support, however it is seriously bugged in
+  // UIWebView in IOS >= 9.3.3 when triggered in touch evnet handlers. It
+  // completely stops working after triggering a few times... so, if native
+  // Promise is avaliable, we will use it:
   if (typeof Promise !== 'undefined' && isNative(Promise)) {
-    let p = Promise.resolve()
+    var p = Promise.resolve()
     timerFunc = () => {
       p.then(nextTickHandler)
-      // 在一些有问题的环境中，Promise.then不会完全破坏，而是表现为
-      // 一种`可以添加到microtask队列中，但是在浏览器需要执行其他操作之前
-      // 队列不会完全执行并清空`的奇怪的状态中(e.g. 可以用一个定时器来处理)
-      // 因此我们可以用一个空的定时器来促使清空microtask队列
+      // in problematic UIWebViews, Promise.then doesn't completely break, but
+      // it can get stuck in a weird state where callbacks are pushed into the
+      // microtask queue but the queue isn't being flushed, until the browser
+      // needs to do some other work, e.g. handle a timer. Therefore we can
+      // 'force' the microtask queue to be flushed by adding an empty timer.
       if (isIOS) setTimeout(noop)
     }
-  } else if (typeof MutationObserver !== 'undefined' && (isNative(MutationObserver) ||
-  // PhantomJS and IOS 7.x
-  MutationObserver.toString() === '[object MutationObserverConstructor]')) {
-    
-    let counter = 1
-    let observer = new MutationObserver(nextTickHandler)
-    let textNode = document.createTextNode(String(counter))
+  } else if (
+    typeof MutationObserver !== 'undefined' && (isNative(MutationObserver)
+    || MutationObserver.toString() === '[object MutationObserverConstructor]')
+  ) {
+    var counter = 1
+    var observer = new MutationObserver(nextTickHandler)
+    var textNode = document.createTextNode(String(counter))
     observer.observe(textNode, {
       characterData: true
     })
@@ -60,7 +72,6 @@ export const nextTick = function () {
       textNode.data = String(counter)
     }
   } else {
-
     timerFunc = setTimeout
   }
 
@@ -85,11 +96,11 @@ if (typeof Set !== 'undefined' && isNative(Set)) {
     constructor () {
       this.set = Object.create(null)
     }
-    has(key) {
+    has (key) {
       return this.set[key] !== undefined
     }
     add (key) {
-      return this.set[key] = 1
+      this.set[key] = 1
     }
     clear () {
       this.set = Object.create(null)

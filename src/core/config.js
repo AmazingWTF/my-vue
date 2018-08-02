@@ -1,47 +1,46 @@
-import { no, noop } from '../shared/util'
+import { no, noop } from 'shared/util'
 
 const config = {
-  // option合并策略
+  // mergeOptions策略 (used in core/util/options)
   optionMergeStrategies: Object.create(null),
 
-  // 是否显示warnings
+  // 是否隐藏警告
   silent: false,
 
   // 是否打开devtools
   devtools: process.env.NODE_ENV !== 'production',
 
-  // 监视错误的处理方法
+  // 错误处理
   errorHandler: null,
 
   // 忽略某些自定义元素
-  ignoredElements: null,
+  ignoreElements: null,
 
-  // Custom user key aliases for v-on
+  // 为v-on自定义的键盘别名
   keyCodes: Object.create(null),
 
-  // 如果标签是否为保留字,则不能注册为组件,并且可能被覆盖(platform-dependent)
+  // 检查标签是否是不能被注册为组件的保留字 (platform-dependent & may be overwritten)
   isReservedTag: no,
 
-  // 标签是否为未知元素(platform-dependent)
+  // 检查标签是否是一个未知的元素 (platform-dependent)
   isUnknownElement: no,
 
-  // 获取元素的命名空间
+  // 取得一个元素的命名空间
   getTagNamespace: noop,
 
-  // 检测是否一个属性必须通过property绑定,比如value (platform-dependent)
+  // 检查一个属性是否必须用property绑定，比如value (platform-dependent)
   mustUseProp: no,
 
-  // 组件可以拥有的资源类型列表
-  _asserTypes: ['component', 'directive', 'filter'],
+  // 一个组件可以拥有的资源类型列表
+  _assetTypes: ['component', 'ditective', 'filter'],
 
+  // 生命周期的列表
+  _lifecycleHooks: ['beforeCreate', 'created', 'beforeMount', 'mounted', 'beforeUpdated', 'updated', 'beforeDestory', 'destroyed', 'actived', 'deactivated'],
 
-  // 生命周期列表
-  _lifecycleHooks: ['beforeCreate', 'created', 'beforeMount', 'mounted', 'beforeUpdate', 'updated', 'beforeDestory', 'destoryed', 'activated', 'deactivated'],
-
-  // Max circular updates allowed in a scheduler flush cycle.
+  // 一个时间循环最多的循环更新
   _maxUpdateCount: 100,
 
-  // 是否为服务端渲染
+  // 服务器渲染？
   _isServer: process.env.VUE_ENV === 'server'
 }
 

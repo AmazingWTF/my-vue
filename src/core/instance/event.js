@@ -1,9 +1,8 @@
-import { bind, toArray } from '../util'
+import { bind, toArray } from '../util/index'
 import { updateListeners } from '../vdom/helpers'
 
-export function initEvent (vm) {
+export function initEvents (vm) {
   vm._events = Object.create(null)
-  // init parent attached events
   const listeners = vm.$options._parentListeners
   const on = bind(vm.$on, vm)
   const off = bind(vm.$off, vm)
@@ -17,7 +16,7 @@ export function initEvent (vm) {
 
 export function eventMixin (Vue) {
   Vue.prototype.$on = function (event, fn) {
-    const vm = this
+    const vm = this;
     (vm._events[event] || (vm._events[event] = [])).push(fn)
     return vm
   }
@@ -25,7 +24,7 @@ export function eventMixin (Vue) {
   Vue.prototype.$once = function (event, fn) {
     const vm = this
     function on () {
-      vm.$off(event, on)
+      vm.$off (event, on)
       fn.apply(vm, arguments)
     }
     on.fn = fn
@@ -35,21 +34,14 @@ export function eventMixin (Vue) {
 
   Vue.prototype.$off = function (event, fn) {
     const vm = this
-    // all
-    if (!arguments.length)  {
+    if (!arguments.length) {
       vm._events = Object.create(null)
       return vm
     }
-    // specific evnet
     const cbs = vm._events[event]
     if (!cbs) {
       return vm
     }
-    if (arguments.length === 1) {
-      vm._events[event] = null
-      return vm
-    }
-    // specific handler
     let cb
     let i = cbs.length
     while (i--) {
@@ -68,7 +60,7 @@ export function eventMixin (Vue) {
     if (cbs) {
       cbs = cbs.length > 1 ? toArray(cbs) : cbs
       const args = toArray(arguments, 1)
-      for (let i = 0, l = cbs.length; i < l; i++) {
+      for (let i = 0, l = cbs.length; i< l; i++) {
         cbs[i].apply(vm, args)
       }
     }

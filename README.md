@@ -15,3 +15,12 @@ git commit version: e9ecdfe1c0f695396ce790f9637787239d180804
 
 #### compiler
     compiler/index.js
+
+
+
+
+
+## 知识点记录
+- next内部实现机制:
+  > 利用原生Promise或者MutationObserver来实现，但是MutationObserver在IOS>=9.3.3上利用touch事件触发几次之后会完全停止工作，所以如果原生Promise可用，优先使用Promise.then，再不行的话，就使用setTimeout
+

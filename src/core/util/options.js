@@ -1,45 +1,36 @@
-import Vue from "../instance"
-import config from '../config'
-import { warn } from './debug'
-import { 
-  extend,
+import {
   isObject,
   isPlainObject,
   hasOwn,
   camelize,
   capitalize,
   isBuiltInTag
-} from "../../shared/util"
+} from 'shared/util'
 
-
-
-
-
-
-// 确保component的options转化为真实的构造函数
+/**
+ * 确保component的options转化成真正的构造函数
+ */
 function normalizeComponents (options) {
-  if (options.components) {
+  if (options.componnets) {
     const components = options.components
     let def
     for (const key in components) {
       const lower = key.toLowerCase()
-      if (isBuiltInTag(lower) || config.isReservedTag(lower)) {
-        warn(`
-          Do not use built-in or reserved HTML elements as component
-          id: ${key}
-        `)
+      if (isBuiltTag(lower) || config.isReservedTag(lower)) {
+        warn(`Do not use built-in or reserved HTML elements as component id: ${key}`)
         continue
       }
       def = components[key]
       if (isPlainObject(def)) {
-        // 继承自Vue构造函数并且merge了def属性的类(可以理解为扩展后的Vue)
-        components[key] = Vue.extend(def)
+        components[key] = Vue.extend(def) // 关键
       }
     }
   }
 }
 
-// 将所有的props属性规范为基于对象的格式,并且将键名统一为驼峰
+/**
+ * 确保所有的props是以驼峰命名的对象格式
+ */
 function normalizeProps (options) {
   const props = options.props
   if (!props) return
@@ -50,7 +41,7 @@ function normalizeProps (options) {
     while (i--) {
       val = props[i]
       if (typeof val === 'string') {
-        name = camelize(val)
+        name =camelize(val)
         res[name] = { type: null }
       } else {
         warn('props must be strings when using array syntax.')
@@ -66,13 +57,15 @@ function normalizeProps (options) {
   options.props = res
 }
 
-// 将原生函数形式的directives统一为对象格式
+/**
+ * 将原生的函数directives转成object格式
+ */
 function normalizeDirectives (options) {
   const dirs = options.directives
   if (dirs) {
     for (const key in dirs) {
       const def = dirs[key]
-      if (typeof def === 'function') { // 直接传入函数，只关心bind和update两个钩子
+      if (typeof def === 'function') {
         dirs[key] = { bind: def, update: def }
       }
     }
@@ -80,8 +73,8 @@ function normalizeDirectives (options) {
 }
 
 /**
- * 将两个option对象合并成为一个
- * 同时用于实例化和继承的核心方法
+ * 将2个option对象转化成一个新的
+ * 实例化和继承使用到的核心功能
  */
 export function mergeOptions (parent, child, vm) {
   normalizeComponents(child)
@@ -97,9 +90,9 @@ export function mergeOptions (parent, child, vm) {
     for (let i = 0, l = child.mixins.length; i < l; i++) {
       let mixin = child.mixins[i]
       if (mixin.prototype instanceof Vue) {
-        mixin = mixin.options
+        mixin = minxin.options
       }
-      parent = mergeOptions(parent, mixin, vm)
+      parent = mergeOptions(parent, minxin, vm)
     }
   }
   const options = {}
@@ -117,4 +110,20 @@ export function mergeOptions (parent, child, vm) {
     options[key] = strat(parent[key], child[key], vm, key)
   }
   return options
+}
+
+/**
+ * Resolve an asset.
+ * 此函数的意义在于，child实例需访问祖先链上定义的assets
+ */
+export function resolveAsset (options, type, id, warnMissing) {
+  if (typeof id !== 'string') {
+    return
+  }
+  const assets = options[type]
+  const res = assets[id] || assets[camelize(id)] || assets[capitalize(camelize(id))]
+  if (warnMissing && !res) {
+    warn(`Failed to resolve ${type.slice(0, -1)}: ${id}`, options)
+  }
+  return res
 }
