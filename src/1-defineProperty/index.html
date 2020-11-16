@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script src="./index.js"></script>
+  <script>
+    const obj = {}
+
+    // 将对象属性转化为可监听属性
+    defineReactive(obj, 'key', 'hahh')
+
+    // 保存监听器
+    callback.target = (newVal, oldVal) => {
+      console.log(`obj.key 被设置 ${oldVal} => ${newVal}`)
+    }
+
+    // 执行依赖收集
+    console.log(obj.key)
+
+    // 值改变，触发监听器
+    obj.key = 'changed'
+
+  </script>
+</body>
+</html>
